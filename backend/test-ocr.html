@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanasu OCR Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result-area {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .loading {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hanasu OCR Test</h1>
+    <p>Upload an image to extract text using EasyOCR</p>
+    
+    <div class="upload-area">
+        <input type="file" id="imageInput" accept="image/*" style="margin-bottom: 10px;">
+        <br>
+        <button onclick="processImage()">Extract Text</button>
+    </div>
+    
+    <div id="result" class="result-area" style="display: none;"></div>
+    
+    <script>
+        async function processImage() {
+            const fileInput = document.getElementById('imageInput');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files[0]) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            formData.append('languages', 'en,ja');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading">Processing image...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:3001/ocr', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <h3>Extracted Text:</h3>
+                        <p><strong>${data.text_extracted}</strong></p>
+                        <h4>Details:</h4>
+                        <p>Filename: ${data.filename}</p>
+                        <p>Processing Time: ${data.processing_time}s</p>
+                        <p>Confidence Scores: ${data.confidence_scores.join(', ')}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Network Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
