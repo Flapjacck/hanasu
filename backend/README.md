@@ -1,6 +1,14 @@
 # Hanasu Backend
 
-Express.js backend with EasyOCR integration for manga text extraction.
+Express.js backend with AI-powered manga panel detection and text extraction.
+
+## Features
+
+- **Smart Panel Detection**: Uses computer vision and ML models to detect manga panels
+- **Text Extraction**: OCR with EasyOCR for Japanese and English text
+- **Reading Order**: Automatically sorts panels in proper reading order
+- **Memory Optimized**: Designed to run under 512MB RAM
+- **REST API**: Simple endpoints for uploading and processing manga pages
 
 ## Setup
 
@@ -18,38 +26,3 @@ Make sure you have Python 3.7+ installed, then:
 pip install -r requirements.txt
 ```
 
-### 3. Start the Server
-
-```bash
-npm run dev
-```
-
-## API Endpoints
-
-### POST /ocr
-
-Upload an image to extract text using EasyOCR.
-
-**Request:**
-
-- Method: POST
-- Content-Type: multipart/form-data
-- Body:
-  - `image`: Image file (jpg, png, gif, bmp, webp)
-  - `languages`: Optional comma-separated language codes (default: "en,ja")
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "filename": "test.jpg",
-  "text_extracted": "Extracted text from the image",
-  "confidence_scores": [0.95, 0.87],
-  "processing_time": 2.3
-}
-```
-
-### GET /health
-
-Health check endpoint.
